@@ -1,10 +1,10 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
 import { isUndefined } from '@seongeun/aggregator-util/lib/type';
-import { DefiModule } from './protocol.module';
+import { DefiModule } from './defi-protocol.module';
 
 @Injectable()
-export class DefiService implements OnModuleInit {
+export class DeFiProtocolService implements OnModuleInit {
   service = new Map<number, any>();
 
   constructor(private readonly moduleRef: ModuleRef) {}

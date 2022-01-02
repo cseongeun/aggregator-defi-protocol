@@ -13,7 +13,7 @@ import {
   validResult,
 } from '@seongeun/aggregator-util/lib/encodeDecode';
 
-export function ProtocolNFT<T extends Constructor>(C: T) {
+export function DeFiProtocolNFT<T extends Constructor>(C: T) {
   abstract class Base extends C {
     constructor(...args: any[]) {
       super(...args);

@@ -28,8 +28,8 @@ import {
   TokenService,
   ContractService,
 } from '@seongeun/aggregator-base/lib/service';
-import { ProtocolBase } from '../protocol-base';
-import { ProtocolLending } from '../protocol-lending';
+import { ProtocolBase } from '../defi-protocol-base';
+import { ProtocolLending } from '../defi-protocol-lending';
 import { INFO } from './aave.constant';
 
 @Injectable()

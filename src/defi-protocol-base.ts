@@ -18,7 +18,7 @@ import { AggregatorProvider } from '@seongeun/aggregator-base/lib/interface';
 import { isUndefined } from '@seongeun/aggregator-util/lib/type';
 import { NETWORK_CHAIN_TYPE } from '@seongeun/aggregator-base/lib/constant';
 
-export class ProtocolBase implements OnModuleInit {
+export class DeFiProtocolBase implements OnModuleInit {
   public isProtocolService = true;
 
   public name: string;

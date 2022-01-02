@@ -5,8 +5,8 @@ import {
   NETWORK_CHAIN_TYPE,
   PROTOCOL_NAME,
 } from '@seongeun/aggregator-base/lib/constant';
-import { ProtocolBase } from '../protocol-base';
-import { ProtocolLending } from '../protocol-lending';
+import { ProtocolBase } from '../defi-protocol-base';
+import { ProtocolLending } from '../defi-protocol-lending';
 import { Lending } from '@seongeun/aggregator-base/lib/entity';
 import { isZero } from '@seongeun/aggregator-util/lib/bignumber';
 import {

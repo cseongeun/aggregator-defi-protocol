@@ -1,7 +1,7 @@
 {
-  "name": "@seongeun/aggregator-protocol",
+  "name": "@seongeun/aggregator-defi-protocol",
   "version": "0.0.1",
-  "description": "Aggregator protocol",
+  "description": "Aggregator defi protocol",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
   "engines": {

@@ -1,9 +1,8 @@
 import { Constructor } from '@seongeun/aggregator-util/lib/constructor';
-import { Lending } from '@libs/repository/lending/entity';
-import { IDeFiLending } from './protocol.interface';
+import { Lending } from '@seongeun/aggregator-base/lib/entity';
 
-export function ProtocolLending<T extends Constructor>(C: T) {
-  abstract class Base extends C implements IDeFiLending {
+export function DeFiProtocolLending<T extends Constructor>(C: T) {
+  abstract class Base extends C {
     constructor(...args: any[]) {
       super(...args);
     }

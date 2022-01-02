@@ -1,7 +1,7 @@
 import { BigNumber, Contract } from 'ethers';
 import { Constructor } from '@seongeun/aggregator-util/lib/constructor';
 
-export function ProtocolDEX<T extends Constructor>(C: T) {
+export function DeFiProtocolDEX<T extends Constructor>(C: T) {
   abstract class Base extends C {
     constructor(...args: any[]) {
       super(...args);
