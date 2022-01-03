@@ -6,6 +6,13 @@ import {
   PROTOCOL_NAME,
   NETWORK_CHAIN_TYPE,
 } from '@seongeun/aggregator-base/lib/constant';
+import { Lending } from '@seongeun/aggregator-base/lib/entity';
+import { IContractInfo } from '@seongeun/aggregator-base/lib/interface';
+import {
+  NetworkService,
+  ProtocolService,
+  ContractService,
+} from '@seongeun/aggregator-base/lib/service';
 import { isZero } from '@seongeun/aggregator-util/lib/bignumber';
 import {
   decodeFunctionResultData,
@@ -21,19 +28,12 @@ import {
 } from '@seongeun/aggregator-util/lib/array';
 import { get } from '@seongeun/aggregator-util/lib/object';
 import { divideDecimals } from '@seongeun/aggregator-util/lib/decimals';
-import { Lending } from '@seongeun/aggregator-base/lib/entity';
-import {
-  NetworkService,
-  ProtocolService,
-  TokenService,
-  ContractService,
-} from '@seongeun/aggregator-base/lib/service';
-import { ProtocolBase } from '../defi-protocol-base';
-import { ProtocolLending } from '../defi-protocol-lending';
+import { BaseExtension } from '../extension/extension.base';
+import { LendingExtension } from '../extension/extension.lending';
 import { INFO } from './aave.constant';
 
 @Injectable()
-export class AaveAVAXService extends ProtocolLending(ProtocolBase) {
+export class AaveAVAXService extends LendingExtension(BaseExtension) {
   name = PROTOCOL_NAME.AAVE;
   chainType = NETWORK_CHAIN_TYPE.EVM;
   chainId = NETWORK_CHAIN_ID.AVAX;
@@ -42,10 +42,9 @@ export class AaveAVAXService extends ProtocolLending(ProtocolBase) {
   constructor(
     public readonly networkService: NetworkService,
     public readonly protocolService: ProtocolService,
-    public readonly tokenService: TokenService,
     public readonly contractService: ContractService,
   ) {
-    super(networkService, protocolService, tokenService, contractService);
+    super(networkService, protocolService, contractService);
   }
 
   /***************************
@@ -65,74 +64,80 @@ export class AaveAVAXService extends ProtocolLending(ProtocolBase) {
     return super.provider as Provider;
   }
 
-  get lendingAddress(): string {
-    return this.constants.lending.address;
+  get lending(): IContractInfo {
+    const address = this.constants.lending.address;
+    const abi = this.addressABI.get(address);
+    return {
+      address,
+      abi,
+    };
   }
 
-  get lendingAbi(): any[] {
-    return this.addressABI.get(this.lendingAddress);
+  get aToken(): IContractInfo {
+    const address = this.constants.lending.a_token_sample_address;
+    const abi = this.addressABI.get(address);
+    return {
+      address,
+      abi,
+    };
+  }
+
+  get vToken(): IContractInfo {
+    const address = this.constants.lending.v_token_sample_address;
+    const abi = this.addressABI.get(address);
+    return {
+      address,
+      abi,
+    };
+  }
+
+  get sToken(): IContractInfo {
+    const address = this.constants.lending.s_token_sample_address;
+    const abi = this.addressABI.get(address);
+    return {
+      address,
+      abi,
+    };
+  }
+
+  get lendingIncentiveController(): IContractInfo {
+    const address = this.constants.lending.incentive_controller_address;
+    const abi = this.addressABI.get(address);
+    return {
+      address,
+      abi,
+    };
+  }
+
+  get lendingDataProvider(): IContractInfo {
+    const address = this.constants.lending.protocol_data_provider_address;
+    const abi = this.addressABI.get(address);
+    return {
+      address,
+      abi,
+    };
   }
 
   get lendingContract(): Contract {
     return new ethers.Contract(
-      this.lendingAddress,
-      this.lendingAbi,
+      this.lending.address,
+      this.lending.abi,
       this.provider,
     );
-  }
-
-  get aTokenSampleAddress(): string {
-    return this.constants.lending.a_token_sample_address;
-  }
-
-  get aTokenAbi(): any[] {
-    return this.addressABI.get(this.aTokenSampleAddress);
-  }
-
-  get vTokenSampleAddress(): string {
-    return this.constants.lending.v_token_sample_address;
-  }
-
-  get vTokenAbi(): any[] {
-    return this.addressABI.get(this.vTokenSampleAddress);
-  }
-
-  get sTokenSampleAddress(): string {
-    return this.constants.lending.s_token_sample_address;
-  }
-
-  get sTokenAbi(): any[] {
-    return this.addressABI.get(this.sTokenSampleAddress);
-  }
-
-  get lendingIncentiveAddress(): string {
-    return this.constants.lending.incentive_controller_address;
-  }
-
-  get lendingIncentiveAbi(): any[] {
-    return this.addressABI.get(this.lendingIncentiveAddress);
   }
 
   get lendingIncentiveContract(): Contract {
     return new ethers.Contract(
-      this.lendingIncentiveAddress,
-      this.lendingIncentiveAbi,
+      this.lendingIncentiveController.address,
+      this.lendingIncentiveController.abi,
       this.provider,
     );
   }
 
-  get lendingDataProviderAddress(): string {
-    return this.constants.lending.protocol_data_provider_address;
-  }
-
-  get lendingDataProviderAbi(): any[] {
-    return this.addressABI.get(this.lendingDataProviderAddress);
-  }
-
   get lendingDataProviderContract(): Contract {
     return new ethers.Contract(
-      this.lendingDataProviderAddress,
-      this.lendingDataProviderAbi,
+      this.lendingDataProvider.address,
+      this.lendingDataProvider.abi,
       this.provider,
     );
   }
@@ -205,8 +210,8 @@ export class AaveAVAXService extends ProtocolLending(ProtocolBase) {
       const reserve = get(JSON.parse(data), 'reserve');
 
       return [
-        this.lendingDataProviderAddress,
-        encodeFunction(this.lendingDataProviderAbi, 'getUserReserveData', [
+        this.lendingDataProvider.address,
+        encodeFunction(this.lendingDataProvider.abi, 'getUserReserveData', [
           reserve,
           address,
         ]),
@@ -221,7 +226,9 @@ export class AaveAVAXService extends ProtocolLending(ProtocolBase) {
 
     const lendingInfoZip = zip(markets, lendingInfoBatchCall);
 
-    lendingInfoZip.forEach(([market, result]) => {
+    lendingInfoZip.forEach((zip) => {
+      const [market, result] = zip;
+
       const { data } = market;
 
       const [aTokenDecimals, vTokenDecimals] = [
@@ -239,7 +246,7 @@ export class AaveAVAXService extends ProtocolLending(ProtocolBase) {
         userReserveDataData,
       )
         ? decodeFunctionResultData(
-            this.lendingDataProviderAbi,
+            this.lendingDataProvider.abi,
             'getUserReserveData',
             userReserveDataData,
           )
@@ -272,23 +279,23 @@ export class AaveAVAXService extends ProtocolLending(ProtocolBase) {
     return reserves.map((address: string) => {
       return [
         [
-          this.lendingDataProviderAddress,
+          this.lendingDataProvider.address,
           encodeFunction(
-            this.lendingDataProviderAbi,
+            this.lendingDataProvider.abi,
             'getReserveTokensAddresses',
             [address],
           ),
         ],
         [
-          this.lendingDataProviderAddress,
-          encodeFunction(this.lendingDataProviderAbi, 'getReserveData', [
+          this.lendingDataProvider.address,
+          encodeFunction(this.lendingDataProvider.abi, 'getReserveData', [
             address,
           ]),
         ],
         [
-          this.lendingDataProviderAddress,
+          this.lendingDataProvider.address,
           encodeFunction(
-            this.lendingDataProviderAbi,
+            this.lendingDataProvider.abi,
             'getReserveConfigurationData',
             [address],
           ),
@@ -316,7 +323,7 @@ export class AaveAVAXService extends ProtocolLending(ProtocolBase) {
         reserveTokenAddressesData,
       )
         ? decodeFunctionResultData(
-            this.lendingDataProviderAbi,
+            this.lendingDataProvider.abi,
             'getReserveTokensAddresses',
             reserveTokenAddressesData,
           )
@@ -324,7 +331,7 @@ export class AaveAVAXService extends ProtocolLending(ProtocolBase) {
 
       const reserveData = validResult(reserveDataSuccess, reserveDataData)
         ? decodeFunctionResultData(
-            this.lendingDataProviderAbi,
+            this.lendingDataProvider.abi,
             'getReserveData',
             reserveDataData,
           )
@@ -335,7 +342,7 @@ export class AaveAVAXService extends ProtocolLending(ProtocolBase) {
         reserveConfigurationData,
       )
         ? decodeFunctionResultData(
-            this.lendingDataProviderAbi,
+            this.lendingDataProvider.abi,
             'getReserveConfigurationData',
             reserveConfigurationData,
           )

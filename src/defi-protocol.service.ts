@@ -1,7 +1,7 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
 import { isUndefined } from '@seongeun/aggregator-util/lib/type';
-import { DefiModule } from './defi-protocol.module';
+import { DefiProtocolModule } from './defi-protocol.module';
 
 @Injectable()
 export class DeFiProtocolService implements OnModuleInit {
@@ -13,7 +13,7 @@ export class DeFiProtocolService implements OnModuleInit {
    * defi 모듈 내 하위 폴더의 export defi service <instance by id>
    */
   async onModuleInit(): Promise<void> {
-    const imports = Reflect.getMetadata('imports', DefiModule);
+    const imports = Reflect.getMetadata('imports', DefiProtocolModule);
     for (const importModule of imports) {
       const exportModules = Reflect.getMetadata('exports', importModule);
 
@@ -23,7 +23,7 @@ export class DeFiProtocolService implements OnModuleInit {
             strict: false,
           });
 
-          const isDeFiService = serviceInstance.isDeFiService;
+          const isDeFiService = serviceInstance.isDeFiProtocolService;
 
           if (!isDeFiService || isUndefined(isDeFiService)) {
             continue;

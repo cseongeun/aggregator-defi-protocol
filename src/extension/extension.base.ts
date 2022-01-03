@@ -9,16 +9,18 @@ import {
   Protocol,
 } from '@seongeun/aggregator-base/lib/entity';
 import {
-  TokenService,
   NetworkService,
   ProtocolService,
   ContractService,
 } from '@seongeun/aggregator-base/lib/service';
-import { AggregatorProvider } from '@seongeun/aggregator-base/lib/interface';
+import {
+  TAggregatorProvider,
+  TContractAbi,
+} from '@seongeun/aggregator-base/lib/interface';
 import { isUndefined } from '@seongeun/aggregator-util/lib/type';
 import { NETWORK_CHAIN_TYPE } from '@seongeun/aggregator-base/lib/constant';
 
-export class DeFiProtocolBase implements OnModuleInit {
+export class BaseExtension implements OnModuleInit {
   public isProtocolService = true;
 
   public name: string;
@@ -31,12 +33,11 @@ export class DeFiProtocolBase implements OnModuleInit {
   public token?: Token;
 
   // Search ABI by address
-  public addressABI = new Map<string, any>();
+  public addressABI = new Map<string, TContractAbi>();
 
   constructor(
     public readonly networkService: NetworkService,
     public readonly protocolService: ProtocolService,
-    public readonly tokenService: TokenService,
     public readonly contractService: ContractService,
   ) {}
 
@@ -60,7 +61,7 @@ export class DeFiProtocolBase implements OnModuleInit {
     await this._injectABI();
   }
 
-  get provider(): AggregatorProvider {
+  get provider(): TAggregatorProvider {
     return this.networkService.provider(this.network.chainKey());
   }
 
@@ -167,7 +168,13 @@ export class DeFiProtocolBase implements OnModuleInit {
         });
 
         contracts.forEach((entity: Contract) => {
-          this.addressABI.set(entity.address, entity.getABI());
+          const abi: TContractAbi = entity.getABI();
+
+          if (isUndefined(abi)) {
+            throw Error;
+          }
+
+          this.addressABI.set(entity.address, abi);
         });
       } catch (e) {
         throw new Error('Not found contract entity');

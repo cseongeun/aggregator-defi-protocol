@@ -3,7 +3,7 @@ import { Constructor } from '@seongeun/aggregator-util/lib/constructor';
 import { flat } from '@seongeun/aggregator-util/lib/array';
 import { Farm, Token } from '@seongeun/aggregator-base/lib/entity';
 
-export function DeFiProtocolFarm<T extends Constructor>(C: T) {
+export function FarmExtension<T extends Constructor>(C: T) {
   abstract class Base extends C {
     constructor(...args: any[]) {
       super(...args);

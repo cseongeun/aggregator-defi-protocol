@@ -3,14 +3,13 @@ import {
   ContractModule,
   NetworkModule,
   ProtocolModule,
-  TokenModule,
 } from '@seongeun/aggregator-base/lib/module';
-import { AaveMATICService } from './aave.matic.service';
 import { AaveAVAXService } from './aave.avax.service';
+import { AaveMATICService } from './aave.matic.service';
 
 @Module({
-  imports: [NetworkModule, ProtocolModule, ContractModule, TokenModule],
-  providers: [AaveMATICService, AaveAVAXService],
-  exports: [AaveMATICService, AaveAVAXService],
+  imports: [NetworkModule, ProtocolModule, ContractModule],
+  providers: [AaveAVAXService, AaveMATICService],
+  exports: [AaveAVAXService, AaveMATICService],
 })
 export class AaveModule {}
