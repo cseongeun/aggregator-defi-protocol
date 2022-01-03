@@ -19,10 +19,6 @@ export function NFTExtension<T extends Constructor>(C: T) {
       super(...args);
     }
 
-    abstract get nfTokenAddress(): string;
-    abstract get nfTokenAbi(): any[];
-    abstract get nfTokenContract(): Contract;
-
     /**
      * 유저의 NFT 정보 조회
      * @param walletAddress 유저 주소

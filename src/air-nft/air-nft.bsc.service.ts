@@ -1,32 +1,36 @@
 import { Injectable } from '@nestjs/common';
 import { BigNumber, Contract, ethers } from 'ethers';
-import { DeFiBase } from '../defi-base';
-import { DeFiNFT } from '../defi-nft';
-import { INFO } from './air-nft.constant';
-import { getBatchERC721TokenInfos } from '@libs/helper/batch-contract';
-import { CHAIN_ID, PROTOCOL } from '@libs/helper/blockchain';
-import { NetworkService } from '../../network/network.service';
-import { AbiService } from '../../abi/abi.service';
-import { ProtocolService } from '../../protocol/protocol.service';
-import { TokenService } from '../../token/token.service';
-import { NFToken } from '@libs/repository/nf-token/entity';
 import { Provider } from '@ethersproject/providers';
-import { CHAIN_TYPE } from '../../../libs/repository/src/network/constant';
+import { getBatchERC721TokenInfos } from '@seongeun/aggregator-util/lib/multicall/evm-contract';
+import {
+  NetworkService,
+  ContractService,
+  ProtocolService,
+} from '@seongeun/aggregator-base/lib/service';
+import { NFToken } from '@seongeun/aggregator-base/lib/entity';
+import {
+  NETWORK_CHAIN_ID,
+  NETWORK_CHAIN_TYPE,
+  PROTOCOL_NAME,
+} from '@seongeun/aggregator-base/lib/constant';
+import { BaseExtension } from '../extension/extension.base';
+import { NFTExtension } from '../extension/extension.nft';
+import { INFO } from './air-nft.constant';
+import { IContractInfo } from '@seongeun/aggregator-base/lib/interface';
 
 @Injectable()
-export class AirNFTBSCService extends DeFiNFT(DeFiBase) {
-  name = PROTOCOL.AIR_NFT;
-  chainType = CHAIN_TYPE.EVM;
-  chainId = CHAIN_ID.BSC;
-  constants = INFO[CHAIN_ID.BSC];
+export class AirNFTBSCService extends NFTExtension(BaseExtension) {
+  name = PROTOCOL_NAME.AIR_NFT;
+  chainType = NETWORK_CHAIN_TYPE.EVM;
+  chainId = NETWORK_CHAIN_ID.BSC;
+  constants = INFO[NETWORK_CHAIN_ID.BSC];
 
   constructor(
     public readonly networkService: NetworkService,
     public readonly protocolService: ProtocolService,
-    public readonly tokenService: TokenService,
-    public readonly abiService: AbiService,
+    public readonly contractService: ContractService,
   ) {
-    super(networkService, protocolService, tokenService, abiService);
+    super(networkService, protocolService, contractService);
   }
 
   /***************************
@@ -43,16 +47,21 @@ export class AirNFTBSCService extends DeFiNFT(DeFiBase) {
     return super.provider as Provider;
   }
 
-  get nfTokenAddress(): string {
-    return this.constants.nf_token.address;
-  }
-
-  get nfTokenAbi(): any[] {
-    return this.addressABI.get(this.nfTokenAddress);
+  get nfToken(): IContractInfo {
+    const address = this.constants.nf_token.address;
+    const abi = this.addressABI.get(address);
+    return {
+      address,
+      abi,
+    };
   }
 
   get nfTokenContract(): Contract {
-    return new ethers.Contract(this.nfTokenAddress, this.nfTokenAbi, this.provider);
+    return new ethers.Contract(
+      this.nfToken.address,
+      this.nfToken.abi,
+      this.provider,
+    );
   }
 
   /***************************
@@ -72,7 +81,7 @@ export class AirNFTBSCService extends DeFiNFT(DeFiBase) {
     return getBatchERC721TokenInfos(
       this.provider,
       this.multiCallAddress,
-      this.nfTokenAddress,
+      this.nfToken.address,
       pids,
     );
   }
@@ -84,12 +93,18 @@ export class AirNFTBSCService extends DeFiNFT(DeFiBase) {
     const output = [];
 
     await Promise.all(
-      [[this.nfTokenAddress, this.nfTokenAbi]].map(
-        async ([nfTokenAddress, nfTokenAbi]: [nfTokenAddress: string, nfTokenAbi: any]) => {
+      [[this.nfToken.address, this.nfToken.abi]].map(
+        async ([nfTokenAddress, nfTokenAbi]: [
+          nfTokenAddress: string,
+          nfTokenAbi: any,
+        ]) => {
           const indexes = await this.getNFTokenIndexesByAddress(
             address,
             { address: nfTokenAddress, abi: nfTokenAbi },
-            { provider: this.provider, multiCallAddress: this.multiCallAddress },
+            {
+              provider: this.provider,
+              multiCallAddress: this.multiCallAddress,
+            },
           );
 
           if (indexes.length > 0) {

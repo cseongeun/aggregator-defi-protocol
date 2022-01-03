@@ -2,13 +2,13 @@ import { BigNumber, Contract } from 'ethers';
 import { Provider } from '@ethersproject/providers';
 import { NETWORK_CHAIN_ID, PROTOCOL_NAME, NETWORK_CHAIN_TYPE } from '@seongeun/aggregator-base/lib/constant';
 import { Lending } from '@seongeun/aggregator-base/lib/entity';
-import { IContractInfo } from '@seongeun/aggregator-base/lib/interface';
 import { NetworkService, ProtocolService, ContractService } from '@seongeun/aggregator-base/lib/service';
+import { IContractInfo } from '@seongeun/aggregator-base/lib/interface';
 import { BaseExtension } from '../extension/extension.base';
-declare const AaveAVAXService_base: (abstract new (...args: any[]) => {
+declare const AaveMATICService_base: (abstract new (...args: any[]) => {
     getLendingsByAddress(lendings: Lending[], address: string): Promise<any>;
 }) & typeof BaseExtension;
-export declare class AaveAVAXService extends AaveAVAXService_base {
+export declare class AaveMATICService extends AaveMATICService_base {
     readonly networkService: NetworkService;
     readonly protocolService: ProtocolService;
     readonly contractService: ContractService;
@@ -65,7 +65,8 @@ export declare class AaveAVAXService extends AaveAVAXService_base {
         isFrozen: boolean;
     }[]>;
     private _trackingLendingsByAddress;
-    private _getLendingMarketEncodeData;
     private _formatLendingMarketResult;
+    private _lendingMarketEncodeData;
+    private _lendingMarketResultData;
 }
 export {};

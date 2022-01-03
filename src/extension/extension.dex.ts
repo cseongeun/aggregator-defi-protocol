@@ -7,11 +7,6 @@ export function DexExtension<T extends Constructor>(C: T) {
       super(...args);
     }
 
-    abstract get dexFactoryAddress(): string;
-    abstract get dexFactoryInitCodeHash(): string;
-    abstract get dexFactoryAbi(): any[];
-    abstract get dexFactoryContract(): Contract;
-
     // /**
     //  * 유저의  DEX 정보 조회
     //  * @param walletAddress wallet address
