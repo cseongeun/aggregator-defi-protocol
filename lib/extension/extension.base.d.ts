@@ -4,7 +4,7 @@ import { Token, Network, Protocol } from '@seongeun/aggregator-base/lib/entity';
 import { NetworkService, ProtocolService, ContractService } from '@seongeun/aggregator-base/lib/service';
 import { TAggregatorProvider, TContractAbi } from '@seongeun/aggregator-base/lib/interface';
 import { NETWORK_CHAIN_TYPE } from '@seongeun/aggregator-base/lib/constant';
-export declare class BaseExtension implements OnModuleInit {
+export declare abstract class BaseExtension implements OnModuleInit {
     readonly networkService: NetworkService;
     readonly protocolService: ProtocolService;
     readonly contractService: ContractService;

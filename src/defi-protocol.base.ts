@@ -21,7 +21,7 @@ import { isUndefined } from '@seongeun/aggregator-util/lib/type';
 import { NETWORK_CHAIN_TYPE } from '@seongeun/aggregator-base/lib/constant';
 
 @Injectable()
-export abstract class BaseExtension implements OnModuleInit {
+export abstract class DeFiProtocolBase implements OnModuleInit {
   public isProtocolService = true;
 
   public name: string;

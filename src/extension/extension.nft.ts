@@ -42,58 +42,7 @@ export function NFTExtension<T extends Constructor>(C: T) {
         tokenURI: string;
       }[]
     >;
-
-    async getNFTokenIndexesByAddress(
-      address: string,
-      nfTokenExtra: {
-        address: string;
-        abi: any;
-      },
-      networkExtra: {
-        provider: Provider;
-        multiCallAddress: string;
-      },
-    ): Promise<number[]> {
-      const output = [];
-
-      const balanceOf = await getSafeERC721BalanceOf(
-        networkExtra.provider,
-        networkExtra.multiCallAddress,
-        nfTokenExtra.address,
-        address,
-      );
-
-      if (isZero(balanceOf)) return output;
-
-      const tokenOfOwnerByIndexEncode = fillSequenceNumber(balanceOf).map(
-        (index: number) => [
-          nfTokenExtra.address,
-          encodeFunction(nfTokenExtra.abi, 'tokenOfOwnerByIndex', [
-            address,
-            index,
-          ]),
-        ],
-      );
-
-      const tokenOfOwnerByIndexBatchCall = await getBatchStaticAggregator(
-        networkExtra.provider,
-        networkExtra.multiCallAddress,
-        tokenOfOwnerByIndexEncode,
-      );
-
-      tokenOfOwnerByIndexBatchCall.forEach(({ success, returnData }) => {
-        if (validResult(success, returnData)) {
-          const index = decodeFunctionResultData(
-            nfTokenExtra.abi,
-            'tokenOfOwnerByIndex',
-            returnData,
-          )[0];
-          output.push(Number(index.toString()));
-        }
-      });
-
-      return output;
-    }
   }
+
   return Base;
 }
