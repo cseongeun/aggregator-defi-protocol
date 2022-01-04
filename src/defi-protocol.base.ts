@@ -34,7 +34,7 @@ export abstract class DeFiProtocolBase implements OnModuleInit {
   public token?: Token;
 
   // Search ABI by address
-  public addressABI = new Map<string, TContractAbi>();
+  protected addressABI = new Map<string, TContractAbi>();
 
   constructor(
     public readonly networkService: NetworkService,
