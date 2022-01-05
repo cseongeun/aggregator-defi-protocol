@@ -63,7 +63,7 @@ export abstract class BaseExtension implements OnModuleInit {
   }
 
   get provider(): TAggregatorProvider {
-    return this.networkService.provider(this.network.chainKey());
+    return this.networkService.provider(this.network.chainKey);
   }
 
   getBalance(address: string): Promise<BigNumber> {

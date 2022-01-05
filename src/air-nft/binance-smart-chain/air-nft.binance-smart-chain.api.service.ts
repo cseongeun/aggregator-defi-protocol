@@ -3,7 +3,6 @@ import { Provider } from '@ethersproject/providers';
 import { NFToken } from '@seongeun/aggregator-base/lib/entity';
 import {
   getBatchStaticAggregator,
-  getSafeERC20BalanceOf,
   getSafeERC721BalanceOf,
 } from '@seongeun/aggregator-util/lib/multicall/evm-contract';
 import { AirNFTBinanceSmartChainBase } from './air-nft.binance-smart-chain.base';

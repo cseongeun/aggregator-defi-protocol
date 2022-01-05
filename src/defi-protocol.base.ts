@@ -63,7 +63,7 @@ export abstract class DeFiProtocolBase implements OnModuleInit {
   }
 
   get provider(): TAggregatorProvider {
-    return this.networkService.provider(this.network.chainKey());
+    return this.networkService.provider(this.network.chainKey);
   }
 
   getBalance(address: string): Promise<BigNumber> {
@@ -106,8 +106,8 @@ export abstract class DeFiProtocolBase implements OnModuleInit {
     }
   }
 
+  // TODO: 로직 수정 필요
   private async _injectABI(): Promise<void> {
-    // TODO: Change if value address inject abi
     for await (const {
       address,
       sample_address,

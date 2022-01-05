@@ -2,7 +2,7 @@ import { NETWORK_CHAIN_ID } from '@seongeun/aggregator-base/lib/constant';
 
 // https://apeswap.gitbook.io/apeswap-finance/smart-contracts
 export const INFO = {
-  [NETWORK_CHAIN_ID.BSC]: {
+  [NETWORK_CHAIN_ID.BINANCE_SMART_CHAIN]: {
     farm: {
       name: 'farm',
       address: '0x5c8D727b265DBAfaba67E050f2f739cAeEB4A6F9',
@@ -16,7 +16,7 @@ export const INFO = {
       address: '0x6eca7754007d22d3F557740d06FeD4A031BeFE1e',
     },
   },
-  [NETWORK_CHAIN_ID.MATIC]: {
+  [NETWORK_CHAIN_ID.POLYGON]: {
     farm: {
       name: 'farm',
       address: '0x54aff400858Dcac39797a81894D9920f16972D1D',

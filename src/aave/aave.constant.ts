@@ -2,7 +2,7 @@ import { NETWORK_CHAIN_ID } from '@seongeun/aggregator-base/lib/constant';
 
 // https://docs.aave.com/developers/
 export const INFO = {
-  [NETWORK_CHAIN_ID.MATIC]: {
+  [NETWORK_CHAIN_ID.POLYGON]: {
     lending: {
       address: '0x8dFf5E27EA6b7AC08EbFdf9eB090F32ee9a30fcf',
       incentive_controller_address:
@@ -14,7 +14,7 @@ export const INFO = {
       s_token_sample_address: '0x2238101B7014C279aaF6b408A284E49cDBd5DB55',
     },
   },
-  [NETWORK_CHAIN_ID.AVAX]: {
+  [NETWORK_CHAIN_ID.AVALANCHE]: {
     lending: {
       address: '0x4F01AeD16D97E3aB5ab2B501154DC9bb0F1A5A2C',
       incentive_controller_address:

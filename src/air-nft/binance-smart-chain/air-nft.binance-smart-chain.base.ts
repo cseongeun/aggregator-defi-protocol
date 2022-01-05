@@ -19,8 +19,8 @@ import { DeFiProtocolBase } from '../../defi-protocol.base';
 export abstract class AirNFTBinanceSmartChainBase extends DeFiProtocolBase {
   name = PROTOCOL_NAME.AIR_NFT;
   chainType = NETWORK_CHAIN_TYPE.EVM;
-  chainId = NETWORK_CHAIN_ID.BSC;
-  constants = INFO[NETWORK_CHAIN_ID.BSC];
+  chainId = NETWORK_CHAIN_ID.BINANCE_SMART_CHAIN;
+  constants = INFO[NETWORK_CHAIN_ID.BINANCE_SMART_CHAIN];
 
   constructor(
     public readonly networkService: NetworkService,

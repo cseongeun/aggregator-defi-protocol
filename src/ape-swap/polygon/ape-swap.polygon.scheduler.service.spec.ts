@@ -81,7 +81,7 @@ describe('ApeSwapPolygonSchedulerService', () => {
 
     describe('getDexFactoryInfos - Dex의 페어 주소', () => {
       it('동작 테스트', async () => {
-        const pairInfos = await service.getDEXFactoryInfos([0]);
+        const pairInfos = await service.getDexFactoryInfos([0]);
         expect(pairInfos[0]).toBeInstanceOf(String);
       });
     });

@@ -28,6 +28,7 @@ describe('AavePolygonSchedulerService', () => {
   describe('getLendingsReserveList - 대출 마켓 리저브 리스트', () => {
     it('동작 테스트', async () => {
       const reserveList = await service.getLendingReserveList();
+      console.log(reserveList);
       expect(Array.isArray(reserveList)).toBe(true);
     });
   });
@@ -35,6 +36,7 @@ describe('AavePolygonSchedulerService', () => {
   describe('getLendingMarketInfos - 대출 마켓 정보', () => {
     it('동작 테스트', async () => {
       const reserveList = await service.getLendingReserveList();
+      console.log(reserveList);
 
       const marketInfos = await service.getLendingMarketInfos(reserveList);
 

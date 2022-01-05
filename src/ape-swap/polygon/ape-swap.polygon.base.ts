@@ -19,8 +19,8 @@ import { DeFiProtocolBase } from '../../defi-protocol.base';
 export class ApeSwapPolygonBase extends DeFiProtocolBase {
   name = PROTOCOL_NAME.APE_SWAP;
   chainType = NETWORK_CHAIN_TYPE.EVM;
-  chainId = NETWORK_CHAIN_ID.MATIC;
-  constants = INFO[NETWORK_CHAIN_ID.MATIC];
+  chainId = NETWORK_CHAIN_ID.POLYGON;
+  constants = INFO[NETWORK_CHAIN_ID.POLYGON];
 
   constructor(
     public readonly networkService: NetworkService,

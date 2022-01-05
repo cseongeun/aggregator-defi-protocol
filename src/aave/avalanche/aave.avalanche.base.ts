@@ -19,8 +19,8 @@ import { DeFiProtocolBase } from '../../defi-protocol.base';
 export abstract class AaveAvalancheBase extends DeFiProtocolBase {
   name = PROTOCOL_NAME.AAVE;
   chainType = NETWORK_CHAIN_TYPE.EVM;
-  chainId = NETWORK_CHAIN_ID.AVAX;
-  constants = INFO[NETWORK_CHAIN_ID.AVAX];
+  chainId = NETWORK_CHAIN_ID.AVALANCHE;
+  constants = INFO[NETWORK_CHAIN_ID.AVALANCHE];
 
   constructor(
     public readonly networkService: NetworkService,

@@ -20,8 +20,8 @@ import { DeFiProtocolBase } from '../../defi-protocol.base';
 export abstract class ApeSwapBinanceSmartChainBase extends DeFiProtocolBase {
   name = PROTOCOL_NAME.APE_SWAP;
   chainType = NETWORK_CHAIN_TYPE.EVM;
-  chainId = NETWORK_CHAIN_ID.BSC;
-  constants = INFO[NETWORK_CHAIN_ID.BSC];
+  chainId = NETWORK_CHAIN_ID.BINANCE_SMART_CHAIN;
+  constants = INFO[NETWORK_CHAIN_ID.BINANCE_SMART_CHAIN];
 
   constructor(
     public readonly networkService: NetworkService,

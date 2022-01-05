@@ -19,8 +19,8 @@ import { DeFiProtocolBase } from '../../defi-protocol.base';
 export abstract class AavePolygonBase extends DeFiProtocolBase {
   name = PROTOCOL_NAME.AAVE;
   chainType = NETWORK_CHAIN_TYPE.EVM;
-  chainId = NETWORK_CHAIN_ID.MATIC;
-  constants = INFO[NETWORK_CHAIN_ID.MATIC];
+  chainId = NETWORK_CHAIN_ID.POLYGON;
+  constants = INFO[NETWORK_CHAIN_ID.POLYGON];
 
   constructor(
     public readonly networkService: NetworkService,
@@ -92,6 +92,7 @@ export abstract class AavePolygonBase extends DeFiProtocolBase {
   }
 
   get lendingContract(): Contract {
+    console.log(this.provider);
     return new ethers.Contract(
       this.lending.address,
       this.lending.abi,

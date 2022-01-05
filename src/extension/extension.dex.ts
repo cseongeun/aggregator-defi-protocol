@@ -24,7 +24,7 @@ export function DexExtension<T extends Constructor>(C: T) {
      * @param pids pair's pid
      * @returns
      */
-    abstract getDEXFactoryInfos(pids: number[]): Promise<string[]>;
+    abstract getDexFactoryInfos(pids: number[]): Promise<string[]>;
   }
   return Base;
 }

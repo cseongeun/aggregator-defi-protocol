@@ -99,7 +99,7 @@ export class ApeSwapPolygonSchedulerService extends ApeSwapPolygonBase {
     return this.dexFactoryContract.allPairsLength();
   }
 
-  async getDEXFactoryInfos(pids: number[]): Promise<string[]> {
+  async getDexFactoryInfos(pids: number[]): Promise<string[]> {
     const dexFactoryInfoEncode = pids.map((pid: number) => [
       this.dexFactory.address,
       encodeFunction(this.dexFactory.abi, 'allPairs', [pid]),
