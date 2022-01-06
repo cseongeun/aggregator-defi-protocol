@@ -74,7 +74,7 @@ export class MdexBinanceSmartChainSchedulerService extends MdexBinanceSmartChain
     });
   }
 
-  async getDEXFactoryTotalLength(): Promise<BigNumber> {
+  async getDexFactoryTotalLength(): Promise<BigNumber> {
     return this.dexFactoryContract.allPairsLength();
   }
 

@@ -13,7 +13,7 @@ export class KlaySwapKlaytnSchedulerService extends KlaySwapKlaytnBase {
   /***************************
    *  Public
    ***************************/
-  async getDEXFactoryTotalLength(): Promise<BigNumber> {
+  async getDexFactoryTotalLength(): Promise<BigNumber> {
     return this.dexFactoryContract.getPoolCount();
   }
 

@@ -121,7 +121,7 @@ export class PancakeSwapBinanceSmartChainSchedulerService extends PancakeSwapBin
   }
 
   // 유동 풀 총 갯수
-  async getDEXFactoryTotalLength(): Promise<BigNumber> {
+  async getDexFactoryTotalLength(): Promise<BigNumber> {
     return this.dexFactoryContract.allPairsLength();
   }
 

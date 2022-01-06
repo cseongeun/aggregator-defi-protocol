@@ -61,9 +61,11 @@ export abstract class ApeSwapBinanceSmartChainBase extends DeFiProtocolBase {
   }
 
   get nfToken(): IContractInfo {
+    const name = this.constants.nf_token.name;
     const address = this.constants.nf_token.address;
     const abi = this.addressABI.get(address);
     return {
+      name,
       address,
       abi,
     };

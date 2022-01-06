@@ -13,6 +13,7 @@ export const INFO = {
         '0xf4ccce374816856d11f00e4069e7cada164065686fbef53c6167a63ec2fd8c5b',
     },
     nf_token: {
+      name: 'NFA',
       address: '0x6eca7754007d22d3F557740d06FeD4A031BeFE1e',
     },
   },

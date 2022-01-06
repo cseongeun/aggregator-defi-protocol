@@ -17,7 +17,7 @@ export function DexExtension<T extends Constructor>(C: T) {
      * 총 DEX Factory에 등록된 pair 갯수
      * @returns Total dex length
      */
-    abstract getDEXFactoryTotalLength(): Promise<BigNumber>;
+    abstract getDexFactoryTotalLength(): Promise<BigNumber>;
 
     /**
      * pid에 등록된 Pair 정보 조회 (node Call => 1 회)

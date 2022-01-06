@@ -13,7 +13,7 @@ export class SushiSwapBinanceSmartChainSchedulerService extends SushiSwapBinance
   /***************************
    *  Public
    ***************************/
-  async getDEXFactoryTotalLength(): Promise<BigNumber> {
+  async getDexFactoryTotalLength(): Promise<BigNumber> {
     return this.dexFactoryContract.allPairsLength();
   }
 

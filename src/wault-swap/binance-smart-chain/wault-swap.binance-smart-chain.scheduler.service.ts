@@ -51,7 +51,7 @@ export class WaultSwapBinanceSmartChainSchedulerService extends WaultSwapBinance
     });
   }
 
-  async getDEXFactoryTotalLength(): Promise<BigNumber> {
+  async getDexFactoryTotalLength(): Promise<BigNumber> {
     return this.dexFactoryContract.allPairsLength();
   }
 

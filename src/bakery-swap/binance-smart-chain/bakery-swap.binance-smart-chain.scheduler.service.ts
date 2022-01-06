@@ -89,7 +89,7 @@ export class BakerySwapBinanceSmartChainSchedulerService extends BakerySwapBinan
     });
   }
 
-  async getDEXFactoryTotalLength(): Promise<BigNumber> {
+  async getDexFactoryTotalLength(): Promise<BigNumber> {
     return this.dexFactoryContract.allPairsLength();
   }
 

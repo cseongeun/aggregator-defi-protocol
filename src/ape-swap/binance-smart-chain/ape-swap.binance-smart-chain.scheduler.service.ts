@@ -55,7 +55,7 @@ export class ApeSwapBinanceSmartChainSchedulerService extends ApeSwapBinanceSmar
     });
   }
 
-  async getDEXFactoryTotalLength(): Promise<BigNumber> {
+  async getDexFactoryTotalLength(): Promise<BigNumber> {
     return this.dexFactoryContract.allPairsLength();
   }
 

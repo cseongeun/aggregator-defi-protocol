@@ -62,7 +62,7 @@ describe('ApeSwapBinanceSmartChainSchedulerService', () => {
   describe('Dex Factory', () => {
     describe('getDexFactoryTotalLength - Dex의 총 유동풀 갯수', () => {
       it('동작 테스트', async () => {
-        const totalLength = await service.getDEXFactoryTotalLength();
+        const totalLength = await service.getDexFactoryTotalLength();
         expect(totalLength.toNumber()).toBeGreaterThanOrEqual(0);
       });
     });

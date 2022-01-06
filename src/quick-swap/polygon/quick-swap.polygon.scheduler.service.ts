@@ -375,7 +375,7 @@ export class QuickSwapPolygonSchedulerService extends QuickSwapPolygonBase {
     });
   }
 
-  async getDEXFactoryTotalLength(): Promise<BigNumber> {
+  async getDexFactoryTotalLength(): Promise<BigNumber> {
     return this.dexFactoryContract.allPairsLength();
   }
 
