@@ -55,4 +55,27 @@ export class AutoFarmBinanceSmartChainSchedulerService extends AutoFarmBinanceSm
   async getFarmStratShareTotal(address: string): Promise<BigNumber> {
     return this.farmStratContract(address).sharesTotal();
   }
+
+  async getFarmStratShareTotalInfos(addresses: string[]): Promise<BigNumber[]> {
+    const farmStratShareTotalInfoEncode = addresses.map((address: string) => [
+      address,
+      encodeFunction(this.farmStrat.abi, 'sharesTotal'),
+    ]);
+
+    const farmStratShareTotalInfoBatchCall = await getBatchStaticAggregator(
+      this.provider,
+      this.multiCallAddress,
+      farmStratShareTotalInfoEncode,
+    );
+
+    return farmStratShareTotalInfoBatchCall.map(({ success, returnData }) => {
+      return validResult(success, returnData)
+        ? decodeFunctionResultData(
+            this.farmStrat.abi,
+            'sharesTotal',
+            returnData,
+          )[0]
+        : null;
+    });
+  }
 }

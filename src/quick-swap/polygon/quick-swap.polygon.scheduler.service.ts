@@ -21,16 +21,16 @@ export class QuickSwapPolygonSchedulerService extends QuickSwapPolygonBase {
    *  Public
    ***************************/
   // TODO: Change
-  async getFarmTotalLength(): Promise<any> {
-    return 4;
+  async getFarmTotalLength(): Promise<BigNumber> {
+    return BigNumber.from(4);
   }
 
-  async getFarmTotalAllocPoint(): Promise<any> {
-    return ZERO;
+  async getFarmTotalAllocPoint(): Promise<BigNumber> {
+    return BigNumber.from(0);
   }
 
-  async getFarmRewardPerBlock(): Promise<any> {
-    return ZERO;
+  async getFarmRewardPerBlock(): Promise<BigNumber> {
+    return BigNumber.from(0);
   }
 
   async getFarmInfos(pids: number[]): Promise<
@@ -213,8 +213,9 @@ export class QuickSwapPolygonSchedulerService extends QuickSwapPolygonBase {
     });
   }
 
-  async getFarm2TotalLength(): Promise<any> {
-    return 117;
+  // TODO: Change. <팜 갯수 확인 함수 존재X>
+  async getFarm2TotalLength(): Promise<BigNumber> {
+    return BigNumber.from(117);
   }
 
   async getFarm2Infos(pids: number[]): Promise<

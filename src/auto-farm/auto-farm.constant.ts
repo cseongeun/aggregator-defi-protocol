@@ -2,9 +2,14 @@ import { NETWORK_CHAIN_ID } from '@seongeun/aggregator-base/lib/constant';
 
 export const INFO = {
   [NETWORK_CHAIN_ID.BINANCE_SMART_CHAIN]: {
+    // deprecated
+    // farm: {
+    //   name: 'farm',
+    //   address: '0x0895196562C7868C5Be92459FaE7f877ED450452',
+    // },
     farm: {
       name: 'farm',
-      address: '0x0895196562C7868C5Be92459FaE7f877ED450452',
+      address: '0x763a05bdb9f8946d8C3FA72d1e0d3f5E68647e5C',
     },
     farm_strat: {
       name: 'farm_strat',
