@@ -1,4 +1,4 @@
-import { BigNumber, Contract } from 'ethers';
+import { BigNumber } from 'ethers';
 import { Constructor } from '@seongeun/aggregator-util/lib/constructor';
 
 export function DexExtension<T extends Constructor>(C: T) {

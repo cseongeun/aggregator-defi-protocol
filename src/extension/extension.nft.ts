@@ -1,17 +1,5 @@
-import { BigNumber, Contract } from 'ethers';
+import { BigNumber } from 'ethers';
 import { Constructor } from '@seongeun/aggregator-util/lib/constructor';
-import { Provider } from '@ethersproject/providers';
-import {
-  getBatchStaticAggregator,
-  getSafeERC721BalanceOf,
-} from '@seongeun/aggregator-util/lib/multicall/evm-contract';
-import { isZero } from '@seongeun/aggregator-util/lib/bignumber';
-import { fillSequenceNumber } from '@seongeun/aggregator-util/lib/array';
-import {
-  decodeFunctionResultData,
-  encodeFunction,
-  validResult,
-} from '@seongeun/aggregator-util/lib/encodeDecode';
 
 export function NFTExtension<T extends Constructor>(C: T) {
   abstract class Base extends C {

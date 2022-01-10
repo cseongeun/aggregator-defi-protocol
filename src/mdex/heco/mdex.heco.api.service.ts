@@ -1,5 +1,3 @@
-import { BigNumber, BigNumberish } from '@ethersproject/bignumber';
-import { Contract } from '@ethersproject/contracts';
 import { Injectable } from '@nestjs/common';
 import { Farm } from '@seongeun/aggregator-base/lib/entity';
 import {
@@ -17,7 +15,6 @@ import {
 } from '@seongeun/aggregator-util/lib/encodeDecode';
 import { getBatchStaticAggregator } from '@seongeun/aggregator-util/lib/multicall/evm-contract';
 import { isUndefined } from '@seongeun/aggregator-util/lib/type';
-import { ethers } from 'ethers';
 import { MdexHecoBase } from './mdex.heco.base';
 
 @Injectable()

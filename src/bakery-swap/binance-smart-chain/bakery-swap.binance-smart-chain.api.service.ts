@@ -1,5 +1,3 @@
-import { BigNumber } from '@ethersproject/bignumber';
-import { Contract } from '@ethersproject/contracts';
 import { Injectable } from '@nestjs/common';
 import { Farm } from '@seongeun/aggregator-base/lib/entity';
 import {
@@ -18,7 +16,6 @@ import {
 import { getBatchStaticAggregator } from '@seongeun/aggregator-util/lib/multicall/evm-contract';
 import { get } from '@seongeun/aggregator-util/lib/object';
 import { isUndefined } from '@seongeun/aggregator-util/lib/type';
-import { ethers } from 'ethers';
 import { BakerySwapBinanceSmartChainBase } from './bakery-swap.binance-smart-chain.base';
 
 @Injectable()

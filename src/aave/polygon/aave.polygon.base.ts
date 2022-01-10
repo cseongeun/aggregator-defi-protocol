@@ -92,7 +92,6 @@ export abstract class AavePolygonBase extends DeFiProtocolBase {
   }
 
   get lendingContract(): Contract {
-    console.log(this.provider);
     return new ethers.Contract(
       this.lending.address,
       this.lending.abi,

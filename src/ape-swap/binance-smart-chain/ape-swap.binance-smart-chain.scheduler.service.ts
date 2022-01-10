@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { BigNumber } from 'ethers';
-import { Provider } from '@ethersproject/providers';
 import {
   decodeFunctionResultData,
   encodeFunction,
