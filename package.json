@@ -1,6 +1,6 @@
 {
   "name": "@seongeun/aggregator-defi-protocol",
-  "version": "0.0.28",
+  "version": "0.0.30",
   "description": "Aggregator defi protocol",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
@@ -32,7 +32,7 @@
     "@nestjs/common": "^8.0.0",
     "@nestjs/core": "^8.0.0",
     "@nestjs/platform-express": "^8.0.0",
-    "@seongeun/aggregator-base": "^0.0.60",
+    "@seongeun/aggregator-base": "^0.0.62",
     "@seongeun/aggregator-util": "^1.0.18",
     "@terra-money/terra.js": "^3.0.2",
     "dotenv": "^10.0.0",
