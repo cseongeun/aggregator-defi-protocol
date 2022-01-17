@@ -8,7 +8,7 @@ import { SushiSwapAvalancheApiService } from './avalanche/sushi-swap.avalanche.a
 import { SushiSwapBinanceSmartChainApiService } from './binance-smart-chain/sushi-swap.binance-smart-chain.api.service';
 import { SushiSwapFantomApiService } from './fantom/sushi-swap.fantom.api.service';
 import { SushiSwapHecoApiService } from './heco/sushi-swap.heco.api.service';
-import { SushiSwapPolygonApiService } from './polygon/sushi-swap.polygon.api.sevice';
+import { SushiSwapPolygonApiService } from './polygon/sushi-swap.polygon.api.service';
 
 @Module({
   imports: [NetworkModule, ProtocolModule, ContractModule],

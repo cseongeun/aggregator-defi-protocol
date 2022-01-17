@@ -1,7 +1,7 @@
 import { Provider } from '@ethersproject/providers';
 import { INestApplication } from '@nestjs/common';
 import { TestModule } from '../../extension/testing/test.module';
-import { SushiSwapPolygonApiService } from './sushi-swap.polygon.api.sevice';
+import { SushiSwapPolygonApiService } from './sushi-swap.polygon.api.service';
 
 describe('SushiSwapPolygonApiService', () => {
   const testModule = new TestModule();

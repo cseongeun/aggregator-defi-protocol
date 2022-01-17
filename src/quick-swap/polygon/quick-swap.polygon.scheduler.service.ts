@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { BigNumber } from '@ethersproject/bignumber';
-import { ZERO, ZERO_ADDRESS } from '@seongeun/aggregator-util/lib/constant';
+import { ZERO_ADDRESS } from '@seongeun/aggregator-util/lib/constant';
 import {
   decodeFunctionResultData,
   encodeFunction,
