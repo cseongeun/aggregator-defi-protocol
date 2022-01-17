@@ -4,7 +4,7 @@ import { NETWORK_CHAIN_ID } from '@seongeun/aggregator-base/lib/constant';
 export const INFO = {
   [NETWORK_CHAIN_ID.BINANCE_SMART_CHAIN]: {
     farm: {
-      name: 'farm',
+      name: 'ape-swap_binance-smart-chain_farm',
       address: '0x5c8D727b265DBAfaba67E050f2f739cAeEB4A6F9',
     },
     dex: {
@@ -19,19 +19,19 @@ export const INFO = {
   },
   [NETWORK_CHAIN_ID.POLYGON]: {
     farm: {
-      name: 'farm',
+      name: 'ape-swap_polygon_farm',
       address: '0x54aff400858Dcac39797a81894D9920f16972D1D',
     },
     farm_rewarder: {
-      name: 'farm_rewarder',
+      name: 'ape-swap_polygon_farm-rewarder',
       sample_address: '0x1F234B1b83e21Cb5e2b99b4E498fe70Ef2d6e3bf',
     },
     farm2: {
-      name: 'farm2',
+      name: 'ape-swap_polygon_farm-2',
       address: '0x37ac7DE40A6fd71FD1559Aa00F154E8dcb72efdb',
     },
     farm2_strat: {
-      name: 'farm2_strat',
+      name: 'ape-swap_polygon_farm-2-strat',
       sample_address: '0x7c549eb3D46fb8105468aa455f846Bf5e6Cdb0E9',
     },
     dex: {

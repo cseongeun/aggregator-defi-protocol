@@ -4,6 +4,7 @@ import { NETWORK_CHAIN_ID } from '@seongeun/aggregator-base/lib/constant';
 export const INFO = {
   [NETWORK_CHAIN_ID.POLYGON]: {
     lending: {
+      name: 'aave-polygon-lending',
       address: '0x8dFf5E27EA6b7AC08EbFdf9eB090F32ee9a30fcf',
       incentive_controller_address:
         '0x357D51124f59836DeD84c8a1730D72B749d8BC23',
@@ -16,6 +17,7 @@ export const INFO = {
   },
   [NETWORK_CHAIN_ID.AVALANCHE]: {
     lending: {
+      name: 'aave-avalanche-lending',
       address: '0x4F01AeD16D97E3aB5ab2B501154DC9bb0F1A5A2C',
       incentive_controller_address:
         '0x01D83Fe6A10D2f2B7AF17034343746188272cAc9',

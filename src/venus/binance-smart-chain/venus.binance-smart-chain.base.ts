@@ -38,13 +38,14 @@ export class VenusBinanceSmartChainBase extends DeFiProtocolBase {
   }
 
   get lending(): IContractInfo {
+    const name = this.constants.lending.name;
     const address = this.constants.lending.address;
     const abi = this.addressABI.get(address);
-    return { address, abi };
+    return { name, address, abi };
   }
 
   get vToken(): IContractInfo {
-    const address = this.constants.v_token.sample_address;
+    const address = this.constants.lending.v_token_sample_address;
     const abi = this.addressABI.get(address);
     return {
       address,

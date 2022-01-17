@@ -3,7 +3,7 @@ import { NETWORK_CHAIN_ID } from '@seongeun/aggregator-base/lib/constant';
 export const INFO = {
   [NETWORK_CHAIN_ID.BINANCE_SMART_CHAIN]: {
     farm: {
-      name: 'farm',
+      name: 'mdex_binance-smart-chain_farm',
       address: '0xc48FE252Aa631017dF253578B1405ea399728A50',
     },
     dex: {
@@ -14,7 +14,7 @@ export const INFO = {
   },
   [NETWORK_CHAIN_ID.HECO]: {
     farm: {
-      name: 'farm',
+      name: 'mdex_heco_farm',
       address: '0xFB03e11D93632D97a8981158A632Dd5986F5E909',
     },
     dex: {

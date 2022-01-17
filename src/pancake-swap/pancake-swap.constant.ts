@@ -3,11 +3,11 @@ import { NETWORK_CHAIN_ID } from '@seongeun/aggregator-base/lib/constant';
 export const INFO = {
   [NETWORK_CHAIN_ID.BINANCE_SMART_CHAIN]: {
     farm: {
-      name: 'farm',
+      name: 'pancake-swap_binance-smart-chain_farm',
       address: '0x73feaa1eE314F8c655E354234017bE2193C9E24E',
     },
     farm2: {
-      name: 'farm2',
+      name: 'pancake-swap_binance-smart-chain_farm-2',
       factory_address: '0x927158Be21Fe3D4da7E96931bb27Fd5059A8CbC2',
       sample_address: '0x09b8a5f51c9e245402057851ada274174fa00e2a',
       sub_graph_url:

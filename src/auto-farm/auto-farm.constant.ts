@@ -8,7 +8,7 @@ export const INFO = {
     //   address: '0x0895196562C7868C5Be92459FaE7f877ED450452',
     // },
     farm: {
-      name: 'farm',
+      name: 'auto-farm_binance-smart-chain_farm',
       address: '0x763a05bdb9f8946d8C3FA72d1e0d3f5E68647e5C',
     },
     farm_strat: {
@@ -18,7 +18,7 @@ export const INFO = {
   },
   [NETWORK_CHAIN_ID.POLYGON]: {
     farm: {
-      name: 'farm',
+      name: 'auto-farm_binance-smart-chain_farm',
       address: '0x0769fd68dFb93167989C6f7254cd0D766Fb2841F',
     },
   },

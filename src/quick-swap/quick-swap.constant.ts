@@ -3,12 +3,12 @@ import { NETWORK_CHAIN_ID } from '@seongeun/aggregator-base/lib/constant';
 export const INFO = {
   [NETWORK_CHAIN_ID.POLYGON]: {
     farm: {
-      name: 'farm',
+      name: 'quick-swap_polygon_farm',
       sample_address: '0x14977e7E263FF79c4c3159F497D9551fbE769625',
       factory_address: '0x9Dd12421C637689c3Fc6e661C9e2f02C2F61b3Eb',
     },
     farm2: {
-      name: 'farm2',
+      name: 'quick-swap_polygon_farm-2',
       sample_address: '0x45a5CB25F3E3bFEe615F6da0731740093F59b768',
       factory_address: '0x8aAA5e259F74c8114e0a471d9f2ADFc66Bfe09ed',
     },

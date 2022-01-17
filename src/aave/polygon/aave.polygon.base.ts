@@ -38,9 +38,11 @@ export abstract class AavePolygonBase extends DeFiProtocolBase {
   }
 
   get lending(): IContractInfo {
+    const name = this.constants.lending.name;
     const address = this.constants.lending.address;
     const abi = this.addressABI.get(address);
     return {
+      name,
       address,
       abi,
     };
