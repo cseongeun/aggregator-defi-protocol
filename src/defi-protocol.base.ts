@@ -169,13 +169,13 @@ export abstract class DeFiProtocolBase implements OnModuleInit {
         });
 
         contracts.forEach((entity: Contract) => {
-          const abi: TContractAbi = entity.getABI();
+          const abi: any = entity.getABI();
 
           if (isUndefined(abi)) {
             throw Error;
           }
 
-          this.addressABI.set(entity.address, abi);
+          this.addressABI.set(entity.address, JSON.parse(abi));
         });
       } catch (e) {
         throw new Error('Not found contract entity');
