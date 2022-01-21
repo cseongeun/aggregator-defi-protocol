@@ -47,7 +47,6 @@ export abstract class DeFiProtocolBase implements OnModuleInit {
     this.network = await this.networkService.repository.findOneBy({
       chainType: this.chainType,
       chainId: this.chainId,
-      status: true,
     });
 
     // if (isUndefined(this.network)) {
