@@ -33,7 +33,7 @@
     "@nestjs/common": "^8.0.0",
     "@nestjs/core": "^8.0.0",
     "@nestjs/platform-express": "^8.0.0",
-    "@seongeun/aggregator-base": "^0.0.73",
+    "@seongeun/aggregator-base": "^0.0.74",
     "@seongeun/aggregator-util": "^1.0.30",
     "@terra-money/terra.js": "^3.0.2",
     "dotenv": "^10.0.0",
