@@ -1,6 +1,6 @@
 {
   "name": "@seongeun/aggregator-defi-protocol",
-  "version": "0.0.41",
+  "version": "0.0.42",
   "description": "Aggregator defi protocol",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
