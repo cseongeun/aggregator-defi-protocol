@@ -50,18 +50,18 @@ export abstract class DeFiProtocolBase implements OnModuleInit {
       status: true,
     });
 
-    if (isUndefined(this.network)) {
-      throw Error(EXCEPTION_CODE.ERR3000);
-    }
+    // if (isUndefined(this.network)) {
+    //   throw Error(EXCEPTION_CODE.ERR3000);
+    // }
 
     this.protocol = await this.protocolService.repository.findOneBy({
       name: this.name,
       network: this.network,
     });
 
-    if (isUndefined(this.protocol)) {
-      throw new Error(EXCEPTION_CODE.ERR3001);
-    }
+    // if (isUndefined(this.protocol)) {
+    //   throw new Error(EXCEPTION_CODE.ERR3001);
+    // }
 
     this.token = this.protocol.token;
 
