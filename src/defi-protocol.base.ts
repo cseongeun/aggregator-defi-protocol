@@ -19,6 +19,7 @@ import {
 } from '@seongeun/aggregator-base/lib/interface';
 import { isUndefined } from '@seongeun/aggregator-util/lib/type';
 import { NETWORK_CHAIN_TYPE } from '@seongeun/aggregator-base/lib/constant';
+import { EXCEPTION_CODE } from '@seongeun/aggregator-common';
 
 @Injectable()
 export abstract class DeFiProtocolBase implements OnModuleInit {
@@ -46,7 +47,12 @@ export abstract class DeFiProtocolBase implements OnModuleInit {
     this.network = await this.networkService.repository.findOneBy({
       chainType: this.chainType,
       chainId: this.chainId,
+      status: true,
     });
+
+    if (isUndefined(this.network)) {
+      throw Error(EXCEPTION_CODE.ERR3000);
+    }
 
     this.protocol = await this.protocolService.repository.findOneBy({
       name: this.name,
@@ -54,7 +60,7 @@ export abstract class DeFiProtocolBase implements OnModuleInit {
     });
 
     if (isUndefined(this.protocol)) {
-      throw new Error('');
+      throw new Error(EXCEPTION_CODE.ERR3001);
     }
 
     this.token = this.protocol.token;
