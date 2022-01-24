@@ -1,6 +1,6 @@
 import { Provider } from '@ethersproject/providers';
 import { INestApplication } from '@nestjs/common';
-import { TestModule } from '../../extension/testing/test.module';
+import { TestModule } from '../../extension/test/test.module';
 import { TerraSwapTerraSchedulerService } from './terra-swap.terra.scheduler.service';
 
 describe('TerraSwapTerraSchedulerService', () => {

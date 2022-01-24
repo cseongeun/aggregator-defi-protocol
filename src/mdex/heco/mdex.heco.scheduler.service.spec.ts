@@ -1,6 +1,6 @@
 import { Provider } from '@ethersproject/providers';
 import { INestApplication } from '@nestjs/common';
-import { TestModule } from '../../extension/testing/test.module';
+import { TestModule } from '../../extension/test/test.module';
 import { MdexHecoSchedulerService } from './mdex.heco.scheduler.service';
 
 describe('MdexHecoSchedulerService', () => {
