@@ -35,8 +35,13 @@ import { VenusApiModule } from '../../venus/venus.api.module';
 import { VenusSchedulerModule } from '../../venus/venus.scheduler.module';
 import { WaultSwapApiModule } from '../../wault-swap/wault-swap.api.module';
 import { WaultSwapSchedulerModule } from '../../wault-swap/wault-swap.scheduler.module';
+import {
+  FarmModule,
+  LendingModule,
+  NFTokenModule,
+} from '@seongeun/aggregator-base/lib/module';
 
-export class MysqlConfigService implements TypeOrmOptionsFactory {
+export class MysqlConfig implements TypeOrmOptionsFactory {
   createTypeOrmOptions(): TypeOrmModuleOptions {
     return {
       ...typeOrmConfig(
@@ -58,7 +63,12 @@ export class TestModule {
   async createTestModule(): Promise<INestApplication> {
     this.module = await Test.createTestingModule({
       imports: [
-        TypeOrmModule.forRootAsync({ useClass: MysqlConfigService }),
+        TypeOrmModule.forRootAsync({ useClass: MysqlConfig }),
+        // Repo
+        FarmModule,
+        NFTokenModule,
+        LendingModule,
+
         // Aave
         AaveApiModule,
         AaveSchedulerModule,

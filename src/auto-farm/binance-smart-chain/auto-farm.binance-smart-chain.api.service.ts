@@ -14,25 +14,39 @@ import {
   validResult,
 } from '@seongeun/aggregator-util/lib/encodeDecode';
 import { getBatchStaticAggregator } from '@seongeun/aggregator-util/lib/multicall/evm-contract';
-import { isUndefined } from '@seongeun/aggregator-util/lib/type';
+import { ProtocolFarmResponseDTO } from '../../defi-protocol.dto';
+import { IUseFarm } from '../../defi-protocol.interface';
 import { AutoFarmBinanceSmartChainBase } from './auto-farm.binance-smart-chain.base';
 
 @Injectable()
-export class AutoFarmBinanceSmartChainApiService extends AutoFarmBinanceSmartChainBase {
-  /***************************
-   *  FOR ADDRESS
-   ***************************/
-  async getFarmsByAddress(farms: Farm[], address: string): Promise<any> {
-    return this._trackingFarmsByAddress(farms, address);
+export class AutoFarmBinanceSmartChainApiService
+  extends AutoFarmBinanceSmartChainBase
+  implements IUseFarm
+{
+  async getFarmsByAddress(
+    address: string,
+    farms: Farm[],
+  ): Promise<ProtocolFarmResponseDTO[]> {
+    const [farmEncodeData, encodeSize] = this._encodeFarm(address, farms);
+
+    const batchCall = await getBatchStaticAggregator(
+      this.provider,
+      this.multiCallAddress,
+      flat(farmEncodeData),
+    );
+
+    const farmResultZip = zip(
+      farms,
+      toSplitWithChunkSize(batchCall, encodeSize),
+    );
+
+    const farmResult = this._formatFarmResult(farmResultZip);
+
+    return farmResult;
   }
 
-  /***************************
-   *  Private
-   ***************************/
-  private async _trackingFarmsByAddress(farms: Farm[], address: string) {
-    if (isUndefined(farms)) return [];
-
-    const farmInfoEncode = farms.map(({ pid }) => {
+  private _encodeFarm(address: string, farms: Farm[]): [any, number] {
+    const encodingData = farms.map(({ pid }) => {
       return [
         [
           this.farm.address,
@@ -44,26 +58,13 @@ export class AutoFarmBinanceSmartChainApiService extends AutoFarmBinanceSmartCha
         ],
       ];
     });
-
-    const farmInfoBatchCall = await getBatchStaticAggregator(
-      this.provider,
-      this.multiCallAddress,
-      flat(farmInfoEncode),
-    );
-
-    const farmInfoBatchCallMap: any[] = toSplitWithChunkSize(
-      farmInfoBatchCall,
-      2,
-    );
-
-    const farmInfoZip = zip(farms, farmInfoBatchCallMap);
-
-    return this._formatFarmResult(farmInfoZip);
+    return [encodingData, 2];
   }
 
-  private _formatFarmResult(farmInfoZip: any) {
-    const output = [];
-    farmInfoZip.forEach(([farm, infoResult]) => {
+  private _formatFarmResult(farmResultZip: any): ProtocolFarmResponseDTO[] {
+    const output: ProtocolFarmResponseDTO[] = [];
+
+    farmResultZip.forEach(([farm, infoResult]) => {
       const { stakeTokens, rewardTokens } = farm;
 
       const [
@@ -107,17 +108,21 @@ export class AutoFarmBinanceSmartChainApiService extends AutoFarmBinanceSmartCha
         targetRewardToken.decimals,
       );
 
+      console.log(stakeAmount.toString(), rewardAmount.toString());
       if (isZero(stakeAmount) && isZero(rewardAmount)) {
         return;
       }
 
-      farm.wallet = {
-        stakeAmounts: [stakeAmount],
-        rewardAmounts: [rewardAmount],
-      };
+      const result = Object.assign(farm, {
+        portfolio: {
+          stakeAmounts: [stakeAmount.toString()],
+          rewardAmounts: [rewardAmount.toString()],
+        },
+      });
 
-      output.push(farm);
+      output.push(result);
     });
+
     return output;
   }
 }

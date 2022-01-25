@@ -17,30 +17,50 @@ import { ZERO } from '@seongeun/aggregator-util/lib/constant';
 import { isZero } from '@seongeun/aggregator-util/lib/bignumber';
 import { divideDecimals } from '@seongeun/aggregator-util/lib/decimals';
 import { ApeSwapPolygonBase } from './ape-swap.polygon.base';
+import { IUseFarm } from '../../defi-protocol.interface';
+import { ProtocolFarmResponseDTO } from '../../defi-protocol.dto';
 
 @Injectable()
-export class ApeSwapPolygonApiService extends ApeSwapPolygonBase {
-  /***************************
-   *  FOR ADDRESS
-   ***************************/
-  async getFarmsByAddress(farms: Farm[], address: string): Promise<any> {
-    return this._trackingFarmsByAddress(farms, address);
+export class ApeSwapPolygonApiService
+  extends ApeSwapPolygonBase
+  implements IUseFarm
+{
+  /**
+   * 팜 조회
+   * @param address 주소
+   * @param farms 조회할 팜 리스트
+   * @returns
+   */
+  async getFarmsByAddress(
+    address: string,
+    farms: Farm[],
+  ): Promise<ProtocolFarmResponseDTO[]> {
+    const [farmEncodedData, encodeSize] = this._encodeFarm(address, farms);
+
+    const batchCall = await getBatchStaticAggregator(
+      this.provider,
+      this.multiCallAddress,
+      flat(farmEncodedData),
+    );
+
+    const farmResultZip = zip(
+      farms,
+      toSplitWithChunkSize(batchCall, encodeSize),
+    );
+
+    const farmResult = this._formatFarmResult(farmResultZip);
+
+    return farmResult;
   }
 
-  /***************************
-   *  Public
-   ***************************/
-  async getFarmRewarderRewardToken(address: string): Promise<string> {
-    return this.farmRewarderContract(address).rewardToken();
-  }
-
-  /***************************
-   *  Private
-   ***************************/
-  private async _trackingFarmsByAddress(farms: Farm[], address: string) {
-    if (isUndefined(farms)) return [];
-
-    const farmInfoEncode = farms.map(({ pid, data }) => {
+  /**
+   * 팜 인코딩 데이터
+   * @param address 주소
+   * @param farms 팜 리스트
+   * @returns 스테이킹 및 리워드 수량 조회 데이터 인코딩, 인코딩 사이즈(묶음 사이즈)
+   */
+  private _encodeFarm(address: string, farms: Farm[]): [any, number] {
+    const encodingData = farms.map(({ pid, data }) => {
       return [
         [
           this.farm.address,
@@ -51,7 +71,7 @@ export class ApeSwapPolygonApiService extends ApeSwapPolygonBase {
           encodeFunction(this.farm.abi, 'pendingBanana', [pid, address]),
         ],
         [
-          get(JSON.parse(data), 'rewarder'),
+          get(data, 'rewarder'),
           encodeFunction(this.farmRewarder.abi, 'pendingTokens', [
             pid,
             address,
@@ -60,30 +80,27 @@ export class ApeSwapPolygonApiService extends ApeSwapPolygonBase {
         ],
       ];
     });
-
-    const farmInfoBatchCall = await getBatchStaticAggregator(
-      this.provider,
-      this.multiCallAddress,
-      flat(farmInfoEncode),
-    );
-
-    const farmInfoBatchCallMap: any[] = toSplitWithChunkSize(
-      farmInfoBatchCall,
-      3,
-    );
-
-    const farmInfoZip = zip(farms, farmInfoBatchCallMap);
-
-    return this._formatFarmResult(farmInfoZip);
+    return [encodingData, 3];
   }
 
-  private async _formatFarmResult(farmInfoZip: any) {
-    const output = [];
+  /**
+   * 팜 디코딩 데이터 및 결과 포맷
+   * @param farmInfoZip [[farm, farmResult], ...]
+   * @returns [{ ...farm, portfolio }]
+   */
+  private async _formatFarmResult(
+    farmResultZip: any,
+  ): Promise<ProtocolFarmResponseDTO[]> {
+    const output: ProtocolFarmResponseDTO[] = [];
 
     await Promise.all(
-      farmInfoZip.map(async ([farm, infoResult]) => {
+      farmResultZip.map(async ([farm, infoResult]) => {
         const { stakeTokens, rewardTokens, data } = farm;
-        const rewarder = get(JSON.parse(data), 'rewarder');
+        console.log(data);
+        const rewarderRewardTokenAddress = get(
+          data,
+          'rewarderRewardTokenAddress',
+        );
 
         const [
           { success: stakeAmountSuccess, returnData: stakeAmountData },
@@ -134,7 +151,7 @@ export class ApeSwapPolygonApiService extends ApeSwapPolygonBase {
 
         farm.rewardTokens = this._sortByRewardTokens(rewardTokens, [
           this.token.address,
-          await this.getFarmRewarderRewardToken(rewarder),
+          rewarderRewardTokenAddress,
         ]);
 
         const { rewardTokens: sortedRewardTokens } = farm;
@@ -166,12 +183,17 @@ export class ApeSwapPolygonApiService extends ApeSwapPolygonBase {
           return;
         }
 
-        farm.wallet = {
-          stakeAmounts: [stakeAmount],
-          rewardAmounts: [rewardAmount, rewarderRewardAmount],
-        };
+        const result = Object.assign(farm, {
+          portfolio: {
+            stakeAmounts: [stakeAmount.toString()],
+            rewardAmounts: [
+              rewardAmount.toString(),
+              rewarderRewardAmount.toString(),
+            ],
+          },
+        });
 
-        output.push(farm);
+        output.push(result);
       }),
     );
     return output;

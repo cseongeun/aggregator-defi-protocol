@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Provider } from '@ethersproject/providers';
-import { Farm } from '@seongeun/aggregator-base/lib/entity';
+import { Farm, NFToken } from '@seongeun/aggregator-base/lib/entity';
 import {
   fillSequenceNumber,
   flat,
@@ -20,67 +20,72 @@ import {
   getBatchStaticAggregator,
   getSafeERC721BalanceOf,
 } from '@seongeun/aggregator-util/lib/multicall/evm-contract';
-import { isUndefined } from '@seongeun/aggregator-util/lib/type';
 import { PancakeSwapBinanceSmartChainBase } from './pancake-swap.binance-smart-chain.base';
+import { IUseFarm, IUseNFT } from '../../defi-protocol.interface';
+import { ProtocolFarmResponseDTO } from '../../defi-protocol.dto';
 
 @Injectable()
-export class PancakeSwapBinanceSmartChainApiService extends PancakeSwapBinanceSmartChainBase {
-  /***************************
-   *  FOR ADDRESS
-   ***************************/
-  async getFarmsByAddress(farms: Farm[], address: string): Promise<any> {
+export class PancakeSwapBinanceSmartChainApiService
+  extends PancakeSwapBinanceSmartChainBase
+  implements IUseFarm, IUseNFT
+{
+  /**
+   * 팜 조회
+   * @param address 주소
+   * @param farms 조회할 팜 리스트
+   * @returns
+   */
+  async getFarmsByAddress(
+    address: string,
+    farms: Farm[],
+  ): Promise<ProtocolFarmResponseDTO[]> {
     const farmGrouped = groupBy(farms, 'name');
 
-    const [farmWalletInfo, farm2WalletInfo] = await Promise.all([
-      this._trackingFarmsByAddress(farmGrouped[this.farm.name], address),
-      this._trackingFarms2ByAddress(farmGrouped[this.farm2.name], address),
-    ]);
+    const farm1 = farmGrouped[this.farm.name];
+    const farm2 = farmGrouped[this.farm2.name];
 
-    return farmWalletInfo.concat(farm2WalletInfo);
-  }
+    const [farmEncodedData, encodeSize] = this._encodeFarm(address, farm1);
+    const [farm2EncodedData, encodeSize2] = this._encodeFarm2(address, farm2);
 
-  async getNFTokensByAddress(
-    address: string,
-  ): Promise<{ indexes: number[]; nfTokenAddress: string }[]> {
-    const output = [];
+    const encodedData = farmEncodedData.concat(farm2EncodedData);
 
-    await Promise.all(
-      [
-        [this.nfToken.address, this.nfToken.abi],
-        [this.nfToken2.address, this.nfToken2.abi],
-        [this.nfToken3.address, this.nfToken3.abi],
-        [this.nfToken4.address, this.nfToken4.abi],
-        [this.nfToken5.address, this.nfToken5.abi],
-      ].map(
-        async ([nfTokenAddress, nfTokenAbi]: [
-          nfTokenAddress: string,
-          nfTokenAbi: any,
-        ]) => {
-          const indexes = await this._getNFTokenIndexesByAddress(
-            address,
-            { address: nfTokenAddress, abi: nfTokenAbi },
-            {
-              provider: this.provider,
-              multiCallAddress: this.multiCallAddress,
-            },
-          );
-
-          if (indexes.length > 0) {
-            output.push({ indexes, nfTokenAddress });
-          }
-        },
-      ),
+    const batchCall = await getBatchStaticAggregator(
+      this.provider,
+      this.multiCallAddress,
+      flat(encodedData),
     );
-    return output;
+
+    const [farmResultZip, farm2ResultZip] = [
+      zip(
+        farm1,
+        toSplitWithChunkSize(
+          batchCall.slice(0, farm1.length * encodeSize),
+          encodeSize,
+        ),
+      ),
+      zip(
+        farm2,
+        toSplitWithChunkSize(
+          batchCall.slice(farm1.length * encodeSize),
+          encodeSize2,
+        ),
+      ),
+    ];
+
+    const farmResult = this._formatFarmResult(farmResultZip);
+    const farm2Result = this._formatFarm2Result(farm2ResultZip);
+
+    return farmResult.concat(farm2Result);
   }
 
-  /***************************
-   *  Private
-   ***************************/
-  private async _trackingFarmsByAddress(farms: Farm[], address: string) {
-    if (isUndefined(farms)) return [];
-
-    const farmInfoEncode = farms.map(({ pid }) => {
+  /**
+   * 팜 인코딩
+   * @param address 주소
+   * @param farms 팜 리스트
+   * @returns 스테이킹 및 리워드 수량 조회 데이터 인코딩, 인코딩 사이즈(묶음 사이즈)
+   */
+  private _encodeFarm(address: string, farms: Farm[]): [any, number] {
+    const encodingData = farms.map(({ pid }) => {
       return [
         [
           this.farm.address,
@@ -92,27 +97,17 @@ export class PancakeSwapBinanceSmartChainApiService extends PancakeSwapBinanceSm
         ],
       ];
     });
-
-    const farmInfoBatchCall = await getBatchStaticAggregator(
-      this.provider,
-      this.multiCallAddress,
-      flat(farmInfoEncode),
-    );
-
-    const farmInfoBatchCallMap: any[] = toSplitWithChunkSize(
-      farmInfoBatchCall,
-      2,
-    );
-
-    const farmInfoZip = zip(farms, farmInfoBatchCallMap);
-
-    return this._formatFarmResult(farmInfoZip);
+    return [encodingData, 2];
   }
 
-  private async _trackingFarms2ByAddress(farms: Farm[], address: string) {
-    if (isUndefined(farms)) return [];
-
-    const farmInfoEncode = farms.map(({ address: farmAddress }) => {
+  /**
+   * 팜2 인코딩 데이터
+   * @param address 주소
+   * @param farms 팜2 리스트
+   * @returns 스테이킹 및 리워드 수량 조회 데이터 인코딩, 인코딩 사이즈(묶음 사이즈)
+   */
+  private _encodeFarm2(address: string, farms: Farm[]): [any, number] {
+    const encodingData = farms.map(({ address: farmAddress }) => {
       return [
         [farmAddress, encodeFunction(this.farm2.abi, 'userInfo', [address])],
         [
@@ -121,88 +116,89 @@ export class PancakeSwapBinanceSmartChainApiService extends PancakeSwapBinanceSm
         ],
       ];
     });
-
-    const farmInfoBatchCall = await getBatchStaticAggregator(
-      this.provider,
-      this.multiCallAddress,
-      flat(farmInfoEncode),
-    );
-
-    const farmInfoBatchCallMap: any[] = toSplitWithChunkSize(
-      farmInfoBatchCall,
-      2,
-    );
-
-    const farmInfoZip = zip(farms, farmInfoBatchCallMap);
-
-    return this._formatFarm2Result(farmInfoZip);
+    return [encodingData, 2];
   }
 
-  private _formatFarmResult(farmInfoZip: any) {
-    const output = [];
+  /**
+   * 팜 디코딩 데이터 및 결과 포맷
+   * @param farmInfoZip [[farm, farmResult], ...]
+   * @returns [{ ...farm, portfolio }]
+   */
+  private _formatFarmResult(farmResultZip: any): ProtocolFarmResponseDTO[] {
+    const output: ProtocolFarmResponseDTO[] = [];
 
-    farmInfoZip.forEach(([farm, infoResult]) => {
-      const { stakeTokens, rewardTokens } = farm;
+    farmResultZip.forEach(
+      ([farm, infoResult]: [farm: Farm, infoResult: any]) => {
+        const { stakeTokens, rewardTokens } = farm;
 
-      const [
-        { success: stakeAmountSuccess, returnData: stakeAmountData },
-        { success: pendingRewardSuccess, returnData: pendingRewardData },
-      ] = infoResult;
+        const [
+          { success: stakeAmountSuccess, returnData: stakeAmountData },
+          { success: pendingRewardSuccess, returnData: pendingRewardData },
+        ] = infoResult;
 
-      const stakedAmountOfAddress = validResult(
-        stakeAmountSuccess,
-        stakeAmountData,
-      )
-        ? decodeFunctionResultData(this.farm.abi, 'userInfo', stakeAmountData)
-            .amount
-        : ZERO;
+        const stakedAmountOfAddress = validResult(
+          stakeAmountSuccess,
+          stakeAmountData,
+        )
+          ? decodeFunctionResultData(this.farm.abi, 'userInfo', stakeAmountData)
+              .amount
+          : ZERO;
 
-      const rewardAmountOfAddress = validResult(
-        pendingRewardSuccess,
-        pendingRewardData,
-      )
-        ? decodeFunctionResultData(
-            this.farm.abi,
-            'pendingCake',
-            pendingRewardData,
-          )
-        : ZERO;
+        const rewardAmountOfAddress = validResult(
+          pendingRewardSuccess,
+          pendingRewardData,
+        )
+          ? decodeFunctionResultData(
+              this.farm.abi,
+              'pendingCake',
+              pendingRewardData,
+            )
+          : ZERO;
 
-      if (isZero(stakedAmountOfAddress) && isZero(rewardAmountOfAddress)) {
-        return;
-      }
+        if (isZero(stakedAmountOfAddress) && isZero(rewardAmountOfAddress)) {
+          return;
+        }
 
-      const targetStakeToken = stakeTokens[0];
-      const targetRewardToken = rewardTokens[0];
+        const targetStakeToken = stakeTokens[0];
+        const targetRewardToken = rewardTokens[0];
 
-      const stakeAmount = divideDecimals(
-        stakedAmountOfAddress,
-        targetStakeToken.decimals,
-      );
+        const stakeAmount = divideDecimals(
+          stakedAmountOfAddress,
+          targetStakeToken.decimals,
+        );
 
-      const rewardAmount = divideDecimals(
-        rewardAmountOfAddress,
-        targetRewardToken.decimals,
-      );
+        const rewardAmount = divideDecimals(
+          rewardAmountOfAddress,
+          targetRewardToken.decimals,
+        );
 
-      if (isZero(stakeAmount) && isZero(rewardAmount)) {
-        return;
-      }
+        if (isZero(stakeAmount) && isZero(rewardAmount)) {
+          return;
+        }
 
-      farm.wallet = {
-        stakeAmounts: [stakeAmount],
-        rewardAmounts: [rewardAmount],
-      };
+        const result = Object.assign(farm, {
+          portfolio: {
+            stakeAmounts: [stakeAmount.toString()],
+            rewardAmounts: [rewardAmount.toString()],
+          },
+        });
 
-      output.push(farm);
-    });
+        output.push(result);
+      },
+    );
+
     return output;
   }
 
-  private _formatFarm2Result(farmInfoZip: any) {
-    const output = [];
+  /**
+   * 팜2 디코딩 데이터 및 결과 포맷
+   * @param farmInfoZip [[farm, farmResult], ...]
+   * @returns [{ ...farm, portfolio }]
+   */
+  private _formatFarm2Result(farmResultZip: any): ProtocolFarmResponseDTO[] {
+    const output: ProtocolFarmResponseDTO[] = [];
 
-    farmInfoZip.forEach(([farm, infoResult]) => {
+    farmResultZip.forEach(([farm, infoResult]) => {
       const { stakeTokens, rewardTokens } = farm;
 
       const [
@@ -250,13 +246,52 @@ export class PancakeSwapBinanceSmartChainApiService extends PancakeSwapBinanceSm
         return;
       }
 
-      farm.wallet = {
-        stakeAmounts: [stakeAmount],
-        rewardAmounts: [rewardAmount],
-      };
+      const result = Object.assign(farm, {
+        portfolio: {
+          stakeAmounts: [stakeAmount.toString()],
+          rewardAmounts: [rewardAmount.toString()],
+        },
+      });
 
-      output.push(farm);
+      output.push(result);
     });
+
+    return output;
+  }
+
+  async getNFTokensByAddress(
+    address: string,
+    nfts: NFToken[],
+  ): Promise<{ indexes: number[]; nfTokenAddress: string }[]> {
+    const output = [];
+
+    await Promise.all(
+      [
+        [this.nfToken.address, this.nfToken.abi],
+        [this.nfToken2.address, this.nfToken2.abi],
+        [this.nfToken3.address, this.nfToken3.abi],
+        [this.nfToken4.address, this.nfToken4.abi],
+        [this.nfToken5.address, this.nfToken5.abi],
+      ].map(
+        async ([nfTokenAddress, nfTokenAbi]: [
+          nfTokenAddress: string,
+          nfTokenAbi: any,
+        ]) => {
+          const indexes = await this._getNFTokenIndexesByAddress(
+            address,
+            { address: nfTokenAddress, abi: nfTokenAbi },
+            {
+              provider: this.provider,
+              multiCallAddress: this.multiCallAddress,
+            },
+          );
+
+          if (indexes.length > 0) {
+            output.push({ indexes, nfTokenAddress });
+          }
+        },
+      ),
+    );
     return output;
   }
 

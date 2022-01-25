@@ -1,5 +1,6 @@
 import { Provider } from '@ethersproject/providers';
 import { INestApplication } from '@nestjs/common';
+import { FarmService } from '@seongeun/aggregator-base/lib/service';
 import { TestModule } from '../../extension/test/test.module';
 import { ApeSwapPolygonApiService } from './ape-swap.polygon.api.service';
 
@@ -7,10 +8,12 @@ describe('ApeSwapPolygonApiService', () => {
   const testModule = new TestModule();
   let app: INestApplication;
   let service: ApeSwapPolygonApiService;
+  let farmService: FarmService;
 
   beforeAll(async () => {
     app = await testModule.createTestModule();
     service = await app.get<ApeSwapPolygonApiService>(ApeSwapPolygonApiService);
+    farmService = await app.get<FarmService>(FarmService);
   });
 
   it('should be defined', () => {
@@ -24,8 +27,15 @@ describe('ApeSwapPolygonApiService', () => {
   });
 
   describe('getFarmsByAddress', () => {
-    it('pass', () => {
-      return;
+    it('동작 테스트', async () => {
+      const address = '0xFDcBF476B286796706e273F86aC51163DA737FA8';
+      const farms = await farmService.repository.findAllBy({
+        protocol: service.protocol,
+        status: true,
+      });
+
+      const result = await service.getFarmsByAddress(address, farms);
+      console.log(JSON.stringify(result));
     });
   });
 });

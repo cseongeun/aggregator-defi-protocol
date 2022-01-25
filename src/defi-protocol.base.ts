@@ -19,7 +19,6 @@ import {
 } from '@seongeun/aggregator-base/lib/interface';
 import { isUndefined } from '@seongeun/aggregator-util/lib/type';
 import { NETWORK_CHAIN_TYPE } from '@seongeun/aggregator-base/lib/constant';
-import { EXCEPTION_CODE } from '@seongeun/aggregator-common';
 
 @Injectable()
 export abstract class DeFiProtocolBase implements OnModuleInit {

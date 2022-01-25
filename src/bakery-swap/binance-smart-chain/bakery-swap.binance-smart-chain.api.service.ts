@@ -15,57 +15,78 @@ import {
 } from '@seongeun/aggregator-util/lib/encodeDecode';
 import { getBatchStaticAggregator } from '@seongeun/aggregator-util/lib/multicall/evm-contract';
 import { get } from '@seongeun/aggregator-util/lib/object';
-import { isUndefined } from '@seongeun/aggregator-util/lib/type';
+import { ProtocolFarmResponseDTO } from '../../defi-protocol.dto';
+import { IUseFarm } from '../../defi-protocol.interface';
 import { BakerySwapBinanceSmartChainBase } from './bakery-swap.binance-smart-chain.base';
 
 @Injectable()
-export class BakerySwapBinanceSmartChainApiService extends BakerySwapBinanceSmartChainBase {
-  /***************************
-   *  FOR ADDRESS
-   ***************************/
-  async getFarmsByAddress(farms: Farm[], address: string): Promise<any> {
-    return this._trackingFarmsByAddress(farms, address);
+export class BakerySwapBinanceSmartChainApiService
+  extends BakerySwapBinanceSmartChainBase
+  implements IUseFarm
+{
+  /**
+   * 팜 조회
+   * @param address 주소
+   * @param farms 조회할 팜 리스트
+   * @returns
+   */
+  async getFarmsByAddress(
+    address: string,
+    farms: Farm[],
+  ): Promise<ProtocolFarmResponseDTO[]> {
+    const [farmEncodedData, encodeSize] = this._encodeFarm(address, farms);
+
+    const batchCall = await getBatchStaticAggregator(
+      this.provider,
+      this.multiCallAddress,
+      flat(farmEncodedData),
+    );
+
+    const farmResultZip = zip(
+      farms,
+      toSplitWithChunkSize(batchCall, encodeSize),
+    );
+
+    const farmResult = this._formatFarmResult(farmResultZip);
+
+    return farmResult;
   }
 
-  /***************************
-   *  Private
-   ***************************/
-  private async _trackingFarmsByAddress(
-    farms: Farm[],
-    address: string,
-  ): Promise<any> {
-    if (isUndefined(farms)) return [];
-
-    const farmInfoEncode = farms.map(({ data }) => {
-      const lpToken = get(JSON.parse(data), 'lpToken');
+  /**
+   * 팜 인코딩 데이터
+   * @param address 주소
+   * @param farms 팜 리스트
+   * @returns 스테이킹 및 리워드 수량 조회 데이터 인코딩, 인코딩 사이즈(묶음 사이즈)
+   */
+  private _encodeFarm(address: string, farms: Farm[]): [any, number] {
+    const encodingData = farms.map(({ poolAddress }) => {
       return [
         [
           this.farm.address,
-          encodeFunction(this.farm.abi, 'poolUserInfoMap', [lpToken, address]),
+          encodeFunction(this.farm.abi, 'poolUserInfoMap', [
+            poolAddress,
+            address,
+          ]),
         ],
         [
           this.farm.address,
-          encodeFunction(this.farm.abi, 'pendingToken', [lpToken, address]),
+          encodeFunction(this.farm.abi, 'pendingToken', [poolAddress, address]),
         ],
       ];
     });
 
-    const farmInfoBatchCall = await getBatchStaticAggregator(
-      this.provider,
-      this.multiCallAddress,
-      flat(farmInfoEncode),
-    );
-
-    const farmInfoBatchCallMap = toSplitWithChunkSize(farmInfoBatchCall, 2);
-
-    const farmInfoZip = zip(farms, farmInfoBatchCallMap);
-
-    return this._formatFarmResult(farmInfoZip);
+    return [encodingData, 2];
   }
 
-  private _formatFarmResult(farmInfoZip: any) {
-    const output = [];
-    farmInfoZip.forEach(([farm, infoResult]) => {
+  /**
+   * 팜 디코딩 데이터 및 결과 포맷
+   * @param farmInfoZip [[farm, farmResult], ...]
+   * @returns [{ ...farm, portfolio }]
+   */
+  private _formatFarmResult(farmResultZip: any): ProtocolFarmResponseDTO[] {
+    const output: ProtocolFarmResponseDTO[] = [];
+
+    farmResultZip.forEach(([farm, infoResult]) => {
       const { stakeTokens, rewardTokens } = farm;
 
       const [
@@ -116,13 +137,16 @@ export class BakerySwapBinanceSmartChainApiService extends BakerySwapBinanceSmar
         return;
       }
 
-      farm.wallet = {
-        stakeAmounts: [stakeAmount],
-        rewardAmounts: [rewardAmount],
-      };
+      const result = Object.assign(farm, {
+        portfolio: {
+          stakeAmounts: [stakeAmount.toString()],
+          rewardAmounts: [rewardAmount.toString()],
+        },
+      });
 
-      output.push(farm);
+      output.push(result);
     });
+
     return output;
   }
 }

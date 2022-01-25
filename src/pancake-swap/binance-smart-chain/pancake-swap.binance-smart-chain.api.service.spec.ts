@@ -1,5 +1,6 @@
 import { Provider } from '@ethersproject/providers';
 import { INestApplication } from '@nestjs/common';
+import { FarmService } from '@seongeun/aggregator-base/lib/service';
 import { TestModule } from '../../extension/test/test.module';
 import { PancakeSwapBinanceSmartChainApiService } from './pancake-swap.binance-smart-chain.api.service';
 
@@ -7,12 +8,14 @@ describe('PancakeSwapBinanceSmartChainApiService', () => {
   const testModule = new TestModule();
   let app: INestApplication;
   let service: PancakeSwapBinanceSmartChainApiService;
+  let farmService: FarmService;
 
   beforeAll(async () => {
     app = await testModule.createTestModule();
     service = await app.get<PancakeSwapBinanceSmartChainApiService>(
       PancakeSwapBinanceSmartChainApiService,
     );
+    farmService = await app.get<FarmService>(FarmService);
   });
 
   it('should be defined', () => {
@@ -26,8 +29,15 @@ describe('PancakeSwapBinanceSmartChainApiService', () => {
   });
 
   describe('getFarmsByAddress', () => {
-    it('pass', () => {
-      return;
+    it('동작 테스트', async () => {
+      const address = '0xFDcBF476B286796706e273F86aC51163DA737FA8';
+      const farms = await farmService.repository.findAllBy({
+        protocol: service.protocol,
+        status: true,
+      });
+
+      const result = await service.getFarmsByAddress(address, farms);
+      console.log(JSON.stringify(result));
     });
   });
 
