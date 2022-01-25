@@ -15,24 +15,48 @@ import {
 } from '@seongeun/aggregator-util/lib/encodeDecode';
 import { getBatchStaticAggregator } from '@seongeun/aggregator-util/lib/multicall/evm-contract';
 import { isUndefined } from '@seongeun/aggregator-util/lib/type';
+import { ProtocolFarmResponseDTO } from '../../defi-protocol.dto';
+import { IUseFarm } from '../../defi-protocol.interface';
 import { MdexHecoBase } from './mdex.heco.base';
 
 @Injectable()
-export class MdexHecoApiService extends MdexHecoBase {
-  /***************************
-   *  FOR ADDRESS
-   ***************************/
-  async getFarmsByAddress(farms: Farm[], address: string): Promise<any> {
-    return this._trackingFarmsByAddress(farms, address);
+export class MdexHecoApiService extends MdexHecoBase implements IUseFarm {
+  /**
+   * 팜 조회
+   * @param address 주소
+   * @param farms 조회할 팜 리스트
+   * @returns
+   */
+  async getFarmsByAddress(
+    address: string,
+    farms: Farm[],
+  ): Promise<ProtocolFarmResponseDTO[]> {
+    const [farmEncodeData, encodeSize] = this._encodeFarm(address, farms);
+
+    const batchCall = await getBatchStaticAggregator(
+      this.provider,
+      this.multiCallAddress,
+      flat(farmEncodeData),
+    );
+
+    const farmResultZip = zip(
+      farms,
+      toSplitWithChunkSize(batchCall, encodeSize),
+    );
+
+    const farmResult = this._formatFarmResult(farmResultZip);
+
+    return farmResult;
   }
 
-  /***************************
-   *  Private
-   ***************************/
-  private async _trackingFarmsByAddress(farms: Farm[], address: string) {
-    if (isUndefined(farms)) return [];
-
-    const farmInfoEncode = farms.map(({ pid }) => {
+  /**
+   * 팜 인코딩 데이터
+   * @param address 주소
+   * @param farms 팜 리스트
+   * @returns 스테이킹 및 리워드 수량 조회 데이터 인코딩, 인코딩 사이즈(묶음 사이즈)
+   */
+  private _encodeFarm(address: string, farms: Farm[]): [any, number] {
+    const encodingData = farms.map(({ pid }) => {
       return [
         [
           this.farm.address,
@@ -45,20 +69,7 @@ export class MdexHecoApiService extends MdexHecoBase {
       ];
     });
 
-    const farmInfoBatchCall = await getBatchStaticAggregator(
-      this.provider,
-      this.multiCallAddress,
-      flat(farmInfoEncode),
-    );
-
-    const farmInfoBatchCallMap: any[] = toSplitWithChunkSize(
-      farmInfoBatchCall,
-      2,
-    );
-
-    const farmInfoZip = zip(farms, farmInfoBatchCallMap);
-
-    return this._formatFarmResult(farmInfoZip);
+    return [encodingData, 2];
   }
 
   private _formatFarmResult(farmInfoZip: any) {
