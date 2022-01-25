@@ -36,12 +36,12 @@ export class ApeSwapBinanceSmartChainApiService
    * @returns
    */
   async getFarmsByAddress(address: string, farms: Farm[]): Promise<any> {
-    const [farmEncodedData, encodeSize] = this._encodeFarm(address, farms);
+    const [farmEncodeData, encodeSize] = this._encodeFarm(address, farms);
 
     const batchCall = await getBatchStaticAggregator(
       this.provider,
       this.multiCallAddress,
-      flat(farmEncodedData),
+      flat(farmEncodeData),
     );
 
     const farmResultZip = zip(

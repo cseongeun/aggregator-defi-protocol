@@ -14,7 +14,6 @@ import {
   validResult,
 } from '@seongeun/aggregator-util/lib/encodeDecode';
 import { getBatchStaticAggregator } from '@seongeun/aggregator-util/lib/multicall/evm-contract';
-import { get } from '@seongeun/aggregator-util/lib/object';
 import { ProtocolFarmResponseDTO } from '../../defi-protocol.dto';
 import { IUseFarm } from '../../defi-protocol.interface';
 import { BakerySwapBinanceSmartChainBase } from './bakery-swap.binance-smart-chain.base';
@@ -34,12 +33,12 @@ export class BakerySwapBinanceSmartChainApiService
     address: string,
     farms: Farm[],
   ): Promise<ProtocolFarmResponseDTO[]> {
-    const [farmEncodedData, encodeSize] = this._encodeFarm(address, farms);
+    const [farmEncodeData, encodeSize] = this._encodeFarm(address, farms);
 
     const batchCall = await getBatchStaticAggregator(
       this.provider,
       this.multiCallAddress,
-      flat(farmEncodedData),
+      flat(farmEncodeData),
     );
 
     const farmResultZip = zip(

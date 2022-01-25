@@ -35,12 +35,12 @@ export class ApeSwapPolygonApiService
     address: string,
     farms: Farm[],
   ): Promise<ProtocolFarmResponseDTO[]> {
-    const [farmEncodedData, encodeSize] = this._encodeFarm(address, farms);
+    const [farmEncodeData, encodeSize] = this._encodeFarm(address, farms);
 
     const batchCall = await getBatchStaticAggregator(
       this.provider,
       this.multiCallAddress,
-      flat(farmEncodedData),
+      flat(farmEncodeData),
     );
 
     const farmResultZip = zip(
